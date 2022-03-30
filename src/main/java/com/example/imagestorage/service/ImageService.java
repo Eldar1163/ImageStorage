@@ -28,10 +28,17 @@ public class ImageService {
     }
 
     public void saveImage(Long taskId, MultipartFile imageFile) {
-        Image image = imageRepository.upcreate(taskId);
-        if (image == null)
+        Image oldImage = imageRepository.get(taskId);
+        Image newImage;
+        if (oldImage != null) {
+            storage.remove(oldImage.getUuid());
+            newImage = imageRepository.update(taskId);
+        } else {
+            newImage = imageRepository.insert(taskId);
+        }
+        if (newImage == null)
             throw new DatabaseException("Cannot add record to database");
-        storage.store(image.getUuid(), imageFile);
+        storage.store(newImage.getUuid(), imageFile);
     }
 
     public void deleteImage(Long taskId) {

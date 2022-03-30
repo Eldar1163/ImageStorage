@@ -1,7 +1,6 @@
 package com.example.imagestorage.repository;
 
 import com.example.imagestorage.domain.Image;
-import com.example.imagestorage.service.Storage;
 import org.slf4j.Logger;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,12 +19,10 @@ public class ImageRepositoryImpl implements ImageRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final Logger logger;
-    private final Storage storage;
 
-    public ImageRepositoryImpl(JdbcTemplate jdbcTemplate, Logger logger, Storage storage) {
+    public ImageRepositoryImpl(JdbcTemplate jdbcTemplate, Logger logger) {
         this.jdbcTemplate = jdbcTemplate;
         this.logger = logger;
-        this.storage = storage;
     }
 
 
@@ -41,25 +38,24 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
 
     @Override
-    public Image upcreate(Long taskId) {
+    public Image insert(Long taskId) {
         UUID uuid = UUID.randomUUID();
-        String query;
-        Image curImage = get(taskId);
-        if (curImage == null) {
-            query = "INSERT INTO image(taskid, uuid) values(?, ?)";
-            jdbcTemplate.update(
-                    query,
-                    taskId,
-                    uuid.toString());
-        } else {
-            query = "UPDATE image SET uuid = ? WHERE taskid = ?";
-            jdbcTemplate.update(
-                    query,
-                    uuid.toString(),
-                    taskId);
-            storage.remove(curImage.getUuid());
-        }
-        return get(taskId);
+        String query = "INSERT INTO image(uuid, taskid) values(?, ?)";
+        jdbcTemplate.update(
+                query,
+                uuid.toString(),
+                taskId);
+        return new Image(taskId, uuid);
+    }
+
+    public Image update(Long taskId) {
+        UUID uuid = UUID.randomUUID();
+        String query = "UPDATE image SET uuid = ? WHERE taskid = ?";
+        jdbcTemplate.update(
+                query,
+                uuid.toString(),
+                taskId);
+        return new Image(taskId, uuid);
     }
 
     @Override
