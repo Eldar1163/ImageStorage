@@ -21,11 +21,11 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-public class Storage {
+public class StorageService {
     private static Path root;
     private final Logger logger;
 
-    public Storage(Logger logger, ConfigurationProperties config) {
+    public StorageService(Logger logger, ConfigurationProperties config) {
         this.logger = logger;
         root = Paths.get(config.getPath());
     }

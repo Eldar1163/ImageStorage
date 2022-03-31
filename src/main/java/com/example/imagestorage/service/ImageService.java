@@ -12,40 +12,40 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImageService {
     private final ImageRepositoryImpl imageRepository;
-    private final Storage storage;
+    private final StorageService storageService;
 
     public ImageService(ImageRepositoryImpl imageRepository,
-                        Storage storage) {
+                        StorageService storageService) {
         this.imageRepository = imageRepository;
-        this.storage = storage;
+        this.storageService = storageService;
     }
 
     public Resource getImage(Long taskId) {
         Image image = imageRepository.get(taskId);
         if (image == null)
             throw new NotFoundException();
-        return storage.read(image.getUuid());
+        return storageService.read(image.getUuid());
     }
 
     public void saveImage(Long taskId, MultipartFile imageFile) {
         Image oldImage = imageRepository.get(taskId);
         Image newImage;
         if (oldImage != null) {
-            storage.remove(oldImage.getUuid());
+            storageService.remove(oldImage.getUuid());
             newImage = imageRepository.update(taskId);
         } else {
             newImage = imageRepository.insert(taskId);
         }
         if (newImage == null)
             throw new DatabaseException("Cannot add record to database");
-        storage.store(newImage.getUuid(), imageFile);
+        storageService.store(newImage.getUuid(), imageFile);
     }
 
     public void deleteImage(Long taskId) {
         Image image = imageRepository.get(taskId);
         if (image == null)
             throw new NotFoundException();
-        storage.remove(image.getUuid());
+        storageService.remove(image.getUuid());
         imageRepository.delete(taskId);
     }
 }
