@@ -12,8 +12,7 @@ import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(value
-            = {NotFoundException.class})
+    @ExceptionHandler(value = NotFoundException.class)
     protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
         String bodyOfResponse = "Resource not found";
         return handleExceptionInternal(ex, bodyOfResponse,
@@ -22,8 +21,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value =  {DatabaseException.class, StorageException.class})
     protected ResponseEntity<Object> handleInternalError(RuntimeException ex, WebRequest request) {
-        String bodyOfResponse = "Internal Error";
-        return handleExceptionInternal(ex, bodyOfResponse,
+        return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
