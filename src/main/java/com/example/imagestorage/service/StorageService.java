@@ -1,6 +1,5 @@
 package com.example.imagestorage.service;
 
-import com.example.imagestorage.ConfigurationProperties;
 import com.example.imagestorage.exception.StorageException;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -21,9 +21,11 @@ public class StorageService {
     private static Path root;
     private final Logger logger;
 
-    public StorageService(Logger logger, ConfigurationProperties config) {
+    public StorageService(Logger logger) {
         this.logger = logger;
-        root = Paths.get(config.getPath());
+        String imagePath = "Images";
+        new File(imagePath).mkdirs();
+        root = Paths.get(imagePath);
     }
 
     public void store(UUID fileUUID, String fileExtension, MultipartFile file) {
