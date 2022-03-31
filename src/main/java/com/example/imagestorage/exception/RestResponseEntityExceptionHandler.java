@@ -27,16 +27,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleConstraintViolationError(ConstraintViolationException ex,
+    @ExceptionHandler(value = {ConstraintViolationException.class, BadImageException.class})
+    protected ResponseEntity<Object> handleConstraintViolationError(RuntimeException ex,
                                                                     WebRequest request) {
-        return handleExceptionInternal(ex, ex.getMessage(),
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-    }
-
-    @ExceptionHandler(value = BadImageException.class)
-    protected ResponseEntity<Object> handleBadImage(BadImageException ex,
-                                                    WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
