@@ -10,4 +10,5 @@ import java.util.UUID;
 public class Image {
     Long taskId;
     UUID uuid;
+    String fileExtension;
 }

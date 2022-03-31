@@ -2,8 +2,6 @@ package com.example.imagestorage.service;
 
 import com.example.imagestorage.ConfigurationProperties;
 import com.example.imagestorage.exception.StorageException;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.slf4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -11,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -30,8 +26,8 @@ public class StorageService {
         root = Paths.get(config.getPath());
     }
 
-    public void store(UUID fileUUID, MultipartFile file) {
-        String filename = fileUUID.toString() + "." + FilenameUtils.getExtension(file.getOriginalFilename());
+    public void store(UUID fileUUID, String fileExtension, MultipartFile file) {
+        String filename = fileUUID.toString() + "." + fileExtension;
         try {
             Files.copy(file.getInputStream(), root.resolve(filename));
         } catch (IOException e) {
@@ -40,13 +36,10 @@ public class StorageService {
         }
     }
 
-    public Resource read(UUID fileUUID) {
+    public Resource read(UUID fileUUID, String fileExtension) {
         try {
-            FileFilter filter = new WildcardFileFilter(fileUUID.toString()+".*");
-            File[] files = new File(root.toString()).listFiles(filter);
-            if (files == null || files.length == 0)
-                throw new StorageException("Could not find file because it not exist");
-            Path file = files[0].toPath();
+            String filename = fileUUID.toString() + "." + fileExtension;
+            Path file = root.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
@@ -60,13 +53,10 @@ public class StorageService {
         }
     }
 
-    public void remove(UUID fileUUID) {
+    public void remove(UUID fileUUID, String fileExtension) {
         try {
-            FileFilter filter = new WildcardFileFilter(fileUUID.toString()+".*");
-            File[] files = new File(root.toString()).listFiles(filter);
-            if (files == null || files.length == 0)
-                throw new StorageException("Could not remove file because it not exist");
-            Path file = files[0].toPath();
+            String filename = fileUUID.toString() + "." + fileExtension;
+            Path file = root.resolve(filename);
             FileSystemUtils.deleteRecursively(file);
         } catch (IOException e) {
             logger.error("Could not remove file with UDID = " + fileUUID);
