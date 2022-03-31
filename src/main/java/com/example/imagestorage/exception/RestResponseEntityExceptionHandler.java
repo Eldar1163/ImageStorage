@@ -1,5 +1,6 @@
 package com.example.imagestorage.exception;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(value =  {DatabaseException.class, StorageException.class})
+    @ExceptionHandler(value =  {DatabaseException.class, StorageException.class, DataAccessException.class})
     protected ResponseEntity<Object> handleInternalError(RuntimeException ex, WebRequest request) {
-        return handleExceptionInternal(ex, ex.getMessage(),
+        if (ex instanceof DataAccessException)
+            return handleExceptionInternal(ex, "Internal server error",
+                    new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+        else
+            return handleExceptionInternal(ex, ex.getMessage(),
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 

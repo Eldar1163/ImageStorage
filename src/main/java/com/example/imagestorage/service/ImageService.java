@@ -1,7 +1,6 @@
 package com.example.imagestorage.service;
 
 import com.example.imagestorage.domain.Image;
-import com.example.imagestorage.exception.DatabaseException;
 import com.example.imagestorage.exception.NotFoundException;
 import com.example.imagestorage.repository.ImageRepositoryImpl;
 import org.springframework.core.io.Resource;
@@ -36,8 +35,6 @@ public class ImageService {
         } else {
             newImage = imageRepository.insert(taskId);
         }
-        if (newImage == null)
-            throw new DatabaseException("Cannot add record to database");
         storageService.store(newImage.getUuid(), imageFile);
     }
 
