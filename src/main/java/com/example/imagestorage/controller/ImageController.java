@@ -13,7 +13,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/image")
+@RequestMapping("/image")
 @Validated
 public class ImageController {
     private final ImageService imageService;
