@@ -15,7 +15,7 @@ public class ImageRepositoryImpl implements ImageRepository {
     RowMapper<Image> MAPPER = (ResultSet res, int rowNum) -> new Image(
             res.getLong("taskid"),
             UUID.fromString(res.getString("uuid")),
-            res.getString("fileextension")
+            res.getString("file_extension")
     );
 
     private final JdbcTemplate jdbcTemplate;
@@ -41,7 +41,7 @@ public class ImageRepositoryImpl implements ImageRepository {
     @Override
     public Image insert(Long taskId, String fileExtension) {
         UUID uuid = UUID.randomUUID();
-        String query = "INSERT INTO image(uuid, taskid, fileextension) values(?, ?, ?)";
+        String query = "INSERT INTO image(uuid, taskid, file_extension) values(?, ?, ?)";
         jdbcTemplate.update(
                 query,
                 uuid.toString(),
@@ -53,7 +53,7 @@ public class ImageRepositoryImpl implements ImageRepository {
     @Override
     public Image update(Long taskId, String fileExtension) {
         UUID uuid = UUID.randomUUID();
-        String query = "UPDATE image SET uuid = ?, fileextension = ? WHERE taskid = ?";
+        String query = "UPDATE image SET uuid = ?, file_extension = ? WHERE taskid = ?";
         jdbcTemplate.update(
                 query,
                 uuid.toString(),

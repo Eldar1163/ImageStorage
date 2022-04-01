@@ -22,11 +22,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value =  {DatabaseException.class, StorageException.class, DataAccessException.class})
     protected ResponseEntity<Object> handleInternalError(RuntimeException ex, WebRequest request) {
-        if (ex instanceof DataAccessException)
-            return handleExceptionInternal(ex, "Internal server error",
-                    new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
-        else
-            return handleExceptionInternal(ex, ex.getMessage(),
+        return handleExceptionInternal(ex, null,
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
