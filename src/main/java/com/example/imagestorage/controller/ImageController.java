@@ -1,10 +1,8 @@
 package com.example.imagestorage.controller;
 
+import com.example.imagestorage.dto.ImageDto;
 import com.example.imagestorage.exception.BadImageException;
 import com.example.imagestorage.service.ImageService;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,14 +21,11 @@ public class ImageController {
     }
 
     @GetMapping()
-    public ResponseEntity<Resource> read (
+    public ImageDto read (
             @RequestParam(name = "taskid", required = false)
             @NotNull(message = "You must specify correct task id")
             @Min(value = 1L, message = "Task ID cannot be less than 1") Long taskId) {
-        Resource image = imageService.getImage(taskId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFilename() + "\"")
-                .body(image);
+        return imageService.getImage(taskId);
     }
 
     @PostMapping
