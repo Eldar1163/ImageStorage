@@ -3,12 +3,15 @@ package com.example.imagestorage.controller;
 import com.example.imagestorage.dto.ImageDto;
 import com.example.imagestorage.exception.BadImageException;
 import com.example.imagestorage.service.ImageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -26,6 +29,14 @@ public class ImageController {
             @NotNull(message = "You must specify correct task id")
             @Min(value = 1L, message = "Task ID cannot be less than 1") Long taskId) {
         return imageService.getImage(taskId);
+    }
+
+    @GetMapping(path = "/list")
+    public List<ImageDto> readList(
+            @RequestPart(name = "idlist")
+            @NotNull(message = "You must specify correct task id list") List<Long> taskIds) {
+        checkListOfId(taskIds);
+        return imageService.getAllImagesByIds(taskIds);
     }
 
     @PostMapping
@@ -47,6 +58,21 @@ public class ImageController {
             @NotNull(message = "You must specify correct task id")
             @Min(value = 1L, message = "Task ID cannot be less than 1") Long taskId) {
         imageService.deleteImage(taskId);
+    }
+
+    private void checkListOfId(List<Long> ids) {
+        if (ids.isEmpty())
+            throw new HttpClientErrorException(
+                    "List of ids must not be empty",
+                    HttpStatus.BAD_REQUEST,
+                    "Error", null, null, null);
+        for (Long id : ids)
+            if (id < 1) {
+                throw new HttpClientErrorException(
+                        "List of ids must contains only positive ids",
+                        HttpStatus.BAD_REQUEST,
+                        "Error", null, null, null);
+            }
     }
 
     private void checkImage(MultipartFile file) {

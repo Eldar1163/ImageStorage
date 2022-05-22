@@ -12,7 +12,9 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 
 @Service
@@ -24,6 +26,14 @@ public class ImageService {
                         StorageService storageService) {
         this.imageRepository = imageRepository;
         this.storageService = storageService;
+    }
+
+    public List<ImageDto> getAllImagesByIds(List<Long> taskIds) {
+        List<ImageDto> result = new ArrayList<>();
+        for(Long taslId: taskIds)
+            result.add(getImage(taslId));
+
+        return result;
     }
 
     public ImageDto getImage(Long taskId) {
