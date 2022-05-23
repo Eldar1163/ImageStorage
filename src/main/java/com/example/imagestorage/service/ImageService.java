@@ -30,12 +30,17 @@ public class ImageService {
     public List<ImageDto> getAllImagesByIds(List<Long> taskIds) {
         List<ImageDto> result = new ArrayList<>();
         for(Long taslId: taskIds)
-            result.add(getImage(taslId));
+            try {
+                result.add(getImage(taslId));
+            } catch (NotFoundException ignored) {
+
+            }
+
 
         return result;
     }
 
-    public ImageDto getImage(Long taskId) {
+    public ImageDto getImage(Long taskId) throws NotFoundException {
         Image image = imageRepository.get(taskId);
         if (image == null)
             throw new NotFoundException();
