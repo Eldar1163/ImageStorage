@@ -22,7 +22,7 @@
 - `DELETE`: Удалить изображение
 
 **/api/image/list**
-- `GET`: Получить список изображений в кодировке Base64 и их идентификаторов
+- `POST`: Получить список изображений в кодировке Base64 и их идентификаторов
 
 ## Примеры использования API
 В примерах запросы отправляются через **cURL**.
@@ -42,7 +42,7 @@ curl --location --request GET 'localhost:8080/api/image?taskid=<task_id>
 Для загрузки списка изображений необходимо передать список идентификаторов на месте **<id1, id2, ..., idn>** в данных формы в ключе **idlist**.
 Использовать следует следующий запрос
 ```
-curl --location --request GET 'localhost:48655/api/image/list' \
+curl --location --request POST 'localhost:48655/api/image/list' \
 --form 'idlist="[<id1, id2, ..., idn>]";type=application/json'
 ```
 
