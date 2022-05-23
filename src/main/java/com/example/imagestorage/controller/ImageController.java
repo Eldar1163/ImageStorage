@@ -30,7 +30,7 @@ public class ImageController {
         return imageService.getImage(taskId);
     }
 
-    @GetMapping(path = "/list")
+    @PostMapping(path = "/list")
     public List<ImageDto> readList(
             @RequestPart(name = "idlist")
             @NotNull(message = "You must specify correct task id list") List<Long> taskIds) {
