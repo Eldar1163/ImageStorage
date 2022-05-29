@@ -20,13 +20,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(value =  {DatabaseException.class, StorageException.class, DataAccessException.class})
+    @ExceptionHandler(value =  {DatabaseException.class, StorageException.class, DataAccessException.class, InternalException.class})
     protected ResponseEntity<Object> handleInternalError(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, null,
                 new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
-    @ExceptionHandler(value = {ConstraintViolationException.class, BadImageException.class})
+    @ExceptionHandler(value = {ConstraintViolationException.class, BadImageException.class, BadRequestException.class})
     protected ResponseEntity<Object> handleConstraintViolationError(RuntimeException ex,
                                                                     WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),

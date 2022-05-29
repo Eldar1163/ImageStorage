@@ -1,16 +1,16 @@
 package com.example.imagestorage.controller;
 
+import com.example.imagestorage.dto.ImageDto;
 import com.example.imagestorage.exception.BadImageException;
+import com.example.imagestorage.exception.BadRequestException;
 import com.example.imagestorage.service.ImageService;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -23,14 +23,19 @@ public class ImageController {
     }
 
     @GetMapping()
-    public ResponseEntity<Resource> read (
+    public ImageDto read (
             @RequestParam(name = "taskid", required = false)
             @NotNull(message = "You must specify correct task id")
             @Min(value = 1L, message = "Task ID cannot be less than 1") Long taskId) {
-        Resource image = imageService.getImage(taskId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + image.getFilename() + "\"")
-                .body(image);
+        return imageService.getImage(taskId);
+    }
+
+    @PostMapping(path = "/list")
+    public List<ImageDto> readList(
+            @RequestPart(name = "idlist")
+            @NotNull(message = "You must specify correct task id list") List<Long> taskIds) {
+        checkListOfId(taskIds);
+        return imageService.getAllImagesByIds(taskIds);
     }
 
     @PostMapping
@@ -52,6 +57,15 @@ public class ImageController {
             @NotNull(message = "You must specify correct task id")
             @Min(value = 1L, message = "Task ID cannot be less than 1") Long taskId) {
         imageService.deleteImage(taskId);
+    }
+
+    private void checkListOfId(List<Long> ids) {
+        if (ids.isEmpty())
+            throw new BadRequestException("List of ids must not be empty");
+        for (Long id : ids)
+            if (id < 1) {
+                throw new BadRequestException("List of ids must contains only positive ids");
+            }
     }
 
     private void checkImage(MultipartFile file) {
